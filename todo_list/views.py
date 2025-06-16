@@ -5,12 +5,34 @@ from .forms import LoginForm, SignupForm, TaskForm, NewTaskForm
 from .models import Task
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import TemplateView
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_api_key.permissions import HasAPIKey
+from .serializer import TaskSerializer
+from rest_framework import viewsets, permissions, filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 def todo_list(request):
     return render(
         request, 
         'todo_list/index.html')
+
+class ApiManagementMixin(APIView):
+    permission_classes = [HasAPIKey | permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response({"mensagem": "Authorized!"})
+    
+class SerializedView(viewsets.ModelViewSet, ApiManagementMixin):
+    queryset = Task.objects.all().order_by('name')
+    serializer_class = TaskSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'status']
+
+    def get_queryset(self):
+        return super().get_queryset()
 
 
 # class LoginView(TemplateView):
@@ -38,7 +60,7 @@ def todo_list(request):
 #         return render(request, self.template_name, {'form': form, 'msg': msg})
 
 def home(request):
-    return render(request, 'home/index.html')
+    return render(request, 'home.html')
 
 def signup_view(request):
     form = UserCreationForm(request.POST or None)
@@ -66,7 +88,7 @@ def signup_view(request):
             print("AQUI")
             print("Erros do formulário:", form.errors)
 
-    return render(request, 'signup/index.html', {'form': form, 'msg': msg})
+    return render(request, 'signup.html', {'form': form, 'msg': msg})
 
 
 def task_list(request):
@@ -89,7 +111,7 @@ def task_list(request):
             return redirect('task_list')
 
     context = {'tasks': tasks, 'form': form}
-    return render(request, 'tasks/index.html', context)
+    return render(request, 'tasks.html', context)
 
 def add_task(request):
     form = NewTaskForm(request.POST or None)
@@ -113,7 +135,7 @@ def add_task(request):
 
     # print(form.data, request.user)
     # context = {'new_task': task, 'form': form}
-    return render(request, 'add_task/index.html', {'form': form})
+    return render(request, 'add_task.html', {'form': form})
 
 def edit_task(request, id):
     task = get_object_or_404(Task, id=id, user=request.user)
@@ -130,4 +152,4 @@ def edit_task(request, id):
     else:
         form = TaskForm(instance=task)
 
-    return render(request, 'edit_task/index.html', {'form': form, 'task': task})
+    return render(request, 'edit_task.html', {'form': form, 'task': task})
