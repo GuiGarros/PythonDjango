@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Criar Conta</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Criar Conta</h2>
+        {% if msg %}
+            <p style="color: red;">{{ msg }}</p>
+        {% endif %}
+        {% if form.errors %}
+            <p style="color: red;">Erros no formulário:</p>
+            <ul style="color: red;">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <p>
+                <label for="id_username">Usuário:</label>
+                <input type="text" name="username" id="id_username" placeholder="Digite seu usuário" required>
+            </p>
+            <p>
+                <label for="id_password1">Senha:</label>
+                <input type="password" name="password1" id="id_password1" placeholder="Digite sua senha" required>
+            </p>
+            <p>
+                <label for="id_password2">Confirme a Senha:</label>
+                <input type="password" name="password2" id="id_password2" placeholder="Confirme sua senha" required>
+            </p>
+            <button type="submit">Criar Conta</button>
+        </form>
+        <p>Já tem uma conta? <a href="{% url 'login' %}">Fazer Login</a></p>
+    </div>
+</body>
+</html>
+
+

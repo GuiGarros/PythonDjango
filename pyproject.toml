@@ -1,0 +1,15 @@
+[project]
+name = "learnDjango"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "crispy-bootstrap5",
+    "django>=5.2.3",
+    "django-crispy-forms",
+    "django-extensions>=4.1",
+    "djangorestframework>=3.16.0",
+    "djangorestframework-api-key==2.*",
+    "pysqlite3>=0.5.4",
+]
